@@ -10,7 +10,6 @@
 
 #define HEIGHT 30
 #define WIDTH 60
-#define LEVEL 0
 
 
 using namespace std;
@@ -19,11 +18,15 @@ using namespace std;
 
 char MAP[HEIGHT][WIDTH];
 string curr_direction="EAST";
+int LEVEL=0;
 int SCORE=0;
-int DELAY=250000;      // microseconds unit
-int VELOCITY=1.1;
-int dV=1;     
-pair<int, int> FOOD;
+float DELAY=250;      // seconds unit
+float VELOCITY=1;
+float dV=0.5;
+float VERTICAL_VELOCITY_FACTOR=0.3;     
+pair<int, int> FOOD, BONUS_FOOD;
+clock_t bonus_start;
+bool BONUS_PERIOD=false;
 vector< pair<int,int> > SNAKE = { make_pair(HEIGHT/2, WIDTH/2-1), make_pair(HEIGHT/2, WIDTH/2), make_pair(HEIGHT/2, WIDTH/2+1)}; // snake of intial length 3
 int NO_0F_USERS=0;
 
@@ -81,6 +84,201 @@ const char* int2string(int val){
 	return final;
 }
 
+std::pair<int,int> food_spawn(){
+	bool flag=false;
+	std::pair<int,int> food;
+	do{
+		flag=false;
+		food = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+		if(LEVEL == 1){
+			for (int j = WIDTH/3; j < 2*WIDTH/3; ++j)
+			{
+				if(food == make_pair(HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+		}else if(LEVEL == 2){
+			for (int j = 0; j < WIDTH/2; ++j)
+			{
+				if(food == make_pair(HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+		}else if(LEVEL == 3){
+			for (int j = 0; j < WIDTH/2; ++j)
+			{
+				if(food == make_pair(HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < WIDTH/3; ++j)
+			{
+				if(food == make_pair(2*HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+		}else if(LEVEL == 4){
+			for (int j = 0; j < WIDTH/2; ++j)
+			{
+				if(food == make_pair(HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < WIDTH/3; ++j)
+			{
+				if(food == make_pair(2*HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < HEIGHT/2; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+		}else if(LEVEL == 5){
+			for (int j = 0; j < WIDTH/2; ++j)
+			{
+				if(food == make_pair(HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < WIDTH/3; ++j)
+			{
+				if(food == make_pair(2*HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < HEIGHT/2; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = HEIGHT/2-1; j <= HEIGHT/2+4; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+		}else if(LEVEL == 6){
+			for (int j = 0; j < WIDTH/2; ++j)
+			{
+				if(food == make_pair(HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < WIDTH/3; ++j)
+			{
+				if(food == make_pair(2*HEIGHT/3,j)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < HEIGHT/2; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = HEIGHT/2-1; j <= HEIGHT/2+4; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 2*HEIGHT/3+3; j < HEIGHT; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3-4)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = 0; j < HEIGHT/2+2; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3-4)){
+					flag=true;
+					break;
+				}
+			}
+			if(flag) continue;
+			for (int j = HEIGHT/2+2; j <= 2*HEIGHT/3+1; ++j)
+			{
+				if(food == make_pair(j,2*WIDTH/3-4)){
+					flag=true;
+					break;
+				}
+			}
+		}
+	}while(flag);
+	return food;
+}
+
 void print(){
 	clear();
 	refresh();
@@ -88,6 +286,17 @@ void print(){
 	// init_pair(6,3,7);
 	// wborder(stdscr, 0, 0, 0, 0, 0, 0, 0, 0);
 	char temp[HEIGHT][WIDTH];
+	if(rand()%(100) == 3 && !BONUS_PERIOD){
+		BONUS_PERIOD=true;
+    	bonus_start = clock(); 
+	}
+	if(BONUS_PERIOD){
+		clock_t now = clock();
+		if(now - bonus_start > 10000000){
+			BONUS_PERIOD=false;
+			BONUS_FOOD = food_spawn();
+		}
+	}
 	for (int i = 0; i < HEIGHT; ++i)
 	{
 		for (int j = 0; j < WIDTH; ++j)
@@ -103,6 +312,10 @@ void print(){
 	{
 		for (int j = 0; j < WIDTH; ++j)
 		{
+			if(i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1){
+				addch('#');
+				continue;
+			}
 			if( make_pair(i,j) == SNAKE[SNAKE.size()-1] ){
 				if(curr_direction=="EAST"){
 					addch(ACS_RARROW);
@@ -115,15 +328,15 @@ void print(){
 				}
 				continue;
 			}
-			if(i==0 || j==0 || i==HEIGHT-1 || j==WIDTH-1){
-				addch(ACS_BULLET);
-				continue;
-			}
 			if(FOOD == make_pair(i,j)){
 				waddch(stdscr, '$');
+				continue;
 			}
-			else
-				waddch(stdscr, temp[i][j]);
+			if(BONUS_FOOD == make_pair(i,j) && BONUS_PERIOD	){
+				waddch(stdscr, '$' | A_UNDERLINE | A_BOLD);
+				continue;
+			}
+			waddch(stdscr, temp[i][j]);
 		}
 		waddch(stdscr, '\n');
 	}
@@ -151,6 +364,105 @@ void intialize(){
 			MAP[i][j] = ' ';
 		}
 	}
+	if(LEVEL == 1){
+		for (int j = WIDTH/3; j < 2*WIDTH/3; ++j)
+		{
+			MAP[HEIGHT/3][j] = '#';
+		}
+	}else if(LEVEL == 2){
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			MAP[HEIGHT/3][j] = '#';
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+	}else if(LEVEL == 3){
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			MAP[HEIGHT/3][j] = '#';
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			MAP[2*HEIGHT/3][j] = '#';
+		}
+	}else if(LEVEL == 4){
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			MAP[HEIGHT/3][j] = '#';
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			MAP[2*HEIGHT/3][j] = '#';
+		}
+		for (int j = 0; j < HEIGHT/2; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+	}else if(LEVEL == 5){
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			MAP[HEIGHT/3][j] = '#';
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			MAP[2*HEIGHT/3][j] = '#';
+		}
+		for (int j = 0; j < HEIGHT/2-2; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = HEIGHT/2-1; j <= HEIGHT/2+4; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+	}else if(LEVEL == 6){
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			MAP[HEIGHT/3][j] = '#';
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			MAP[2*HEIGHT/3][j] = '#';
+		}
+		for (int j = 0; j < HEIGHT/2-2; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = HEIGHT/2-1; j <= HEIGHT/2+4; ++j)
+		{
+			MAP[j][2*WIDTH/3] = '#';
+		}
+		for (int j = 2*HEIGHT/3+3; j < HEIGHT; ++j)
+		{
+			MAP[j][2*WIDTH/3-4] = '#';
+		}
+		for (int j = 0; j < HEIGHT/2+2; ++j)
+		{
+			MAP[j][2*WIDTH/3-4] = '#';
+		}
+		for (int j = HEIGHT/2+2; j <= 2*HEIGHT/3+1; ++j)
+		{
+			MAP[j][2*WIDTH/3-4] = '#';
+		}
+	}
 	//TOP BORDER
 	for(int i=0; i<WIDTH; ++i){
 		MAP[0][i] = '+';
@@ -169,7 +481,8 @@ void intialize(){
 	}
 
 	//initialise food
-	FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+	FOOD = food_spawn();
+	BONUS_FOOD = food_spawn();
 	// FOOD = make_pair(4, 5);
 	// OUTPUT ON SCREEN
 	print();
@@ -184,8 +497,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first+1, SNAKE[SNAKE.size()-1].second) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -200,8 +521,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first, SNAKE[SNAKE.size()-1].second+1) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -216,8 +545,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first-1, SNAKE[SNAKE.size()-1].second) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -232,8 +569,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first, SNAKE[SNAKE.size()-1].second-1) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -248,8 +593,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first+1, SNAKE[SNAKE.size()-1].second) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -264,8 +617,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first-1, SNAKE[SNAKE.size()-1].second) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -280,8 +641,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first, SNAKE[SNAKE.size()-1].second+1) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -296,8 +665,16 @@ void move(char ch){
 			}else{
 				SNAKE.push_back( make_pair(SNAKE[SNAKE.size()-1].first, SNAKE[SNAKE.size()-1].second-1) );
 			}
-			if(SNAKE[SNAKE.size()-1] == FOOD){
-				FOOD = make_pair(rand()%(HEIGHT-2)+1, rand()%(WIDTH-2)+1);
+			if(SNAKE[SNAKE.size()-1] == BONUS_FOOD){
+				BONUS_FOOD = food_spawn();
+				BONUS_PERIOD = false;
+				SCORE += 3;
+				if(SCORE%5==0 || (SCORE-1)%5==0 || (SCORE-2)%5==0){
+					VELOCITY += dV;
+				}
+			}
+			else if(SNAKE[SNAKE.size()-1] == FOOD){
+				FOOD = food_spawn();
 				SCORE++;
 				if(SCORE%5==0){
 					VELOCITY += dV;
@@ -309,21 +686,252 @@ void move(char ch){
 }
 
 bool game_over(){
-	if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
-		return true;
-	}else{
-		bool flag=false;
-		for (int i = 0; i < SNAKE.size()-1; ++i)
-		{
-			if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
-				flag=true;
-				break;
+	if(LEVEL == 0){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
+			}
+			return flag;
+		}
+	}else if(LEVEL == 1){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
 			}
 		}
-		return flag;
+
+		for (int j = WIDTH/3; j < 2*WIDTH/3; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(HEIGHT/3, j)){
+				return true;
+			}
+		}
+		return false;
+	}else if(LEVEL == 2){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
+			}
+		}
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		return false;
+	}else if(LEVEL == 3){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
+			}
+		}
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(2*HEIGHT/3, j)){
+				return true;
+			}
+		}
+		return false;
+	}else if(LEVEL == 4){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
+			}
+		}
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(2*HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 0; j < HEIGHT/2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		return false;
+	}else if(LEVEL == 5){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
+			}
+		}
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(2*HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 0; j < HEIGHT/2-2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = HEIGHT/2-1; j <= HEIGHT/2+4; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		return false;
+	}else if(LEVEL == 6){
+		if (SNAKE[SNAKE.size()-1].first == 0 || SNAKE[SNAKE.size()-1].second == 0 || SNAKE[SNAKE.size()-1].first == HEIGHT-1 || SNAKE[SNAKE.size()-1].second == WIDTH-1){
+			return true;
+		}else{
+			bool flag=false;
+			for (int i = 0; i < SNAKE.size()-1; ++i)
+			{
+				if(SNAKE[i] == SNAKE[SNAKE.size()-1]){
+					flag=true;
+					break;
+				}
+			}
+		}
+		for (int j = 0; j < WIDTH/2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 2*HEIGHT/3; j < HEIGHT; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = 0; j < WIDTH/3; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(2*HEIGHT/3, j)){
+				return true;
+			}
+		}
+		for (int j = 0; j < HEIGHT/2-2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = HEIGHT/2-1; j <= HEIGHT/2+4; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3)){
+				return true;
+			}
+		}
+		for (int j = 2*HEIGHT/3+3; j < HEIGHT; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3-4)){
+				return true;
+			}
+		}
+		for (int j = 0; j < HEIGHT/2+2; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3-4)){
+				return true;
+			}
+		}
+		for (int j = HEIGHT/2+2; j <= 2*HEIGHT/3+1; ++j)
+		{
+			if(SNAKE[SNAKE.size()-1] == make_pair(j, 2*WIDTH/3-4)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
+void delay(int number_of_seconds) 
+{ 
+    int milli_seconds = 1000 * number_of_seconds; 
+    clock_t start_time = clock(); 
+    while (clock() < start_time + milli_seconds); 
+} 
 
 char input(){
 	// INPUT FROM THE USER
@@ -346,15 +954,15 @@ void play(){
 				clear();
 				// getmaxyx(stdscr, x, y);
 				attron(A_STANDOUT);
- 				mvwaddstr(stdscr, x/2, y/2, "GAME OVER !!");
+ 				mvwaddstr(stdscr, x/2, y/2, "GAME OVER ");
 				for (int i = 0; i < 3; ++i)
 				{
 					waddch(stdscr, '.');
 					refresh();
-					sleep(0.7);
+					if(i<2)
+						usleep((float)(500000));
 				}
  				refresh();
- 				sleep(0.7);
 				break;
 			}
 			print();
@@ -365,15 +973,15 @@ void play(){
 					clear();
 					// getmaxyx(stdscr, x, y);
 					attron(A_STANDOUT);
-     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER !!");
-				for (int i = 0; i < 3; ++i)
-				{
-					waddch(stdscr, '.');
-					refresh();
-					sleep(0.7);
-				}
+     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER ");
+					for (int i = 0; i < 3; ++i)
+					{
+						waddch(stdscr, '.');
+						refresh();
+						if(i<2)
+							usleep((float)(500000));
+					}
      				refresh();
-     				sleep(1);
 					break;
 				}
 				print();
@@ -383,15 +991,15 @@ void play(){
 					clear();
 					// getmaxyx(stdscr, x, y);
 					attron(A_STANDOUT);
-     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER !!");
-				for (int i = 0; i < 3; ++i)
-				{
-					waddch(stdscr, '.');
-					refresh();
-					sleep(0.7);
-				}
+     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER ");
+					for (int i = 0; i < 3; ++i)
+					{
+						waddch(stdscr, '.');
+						refresh();
+						if(i<2)
+							usleep((float)(500000));
+					}
      				refresh();
-     				sleep(1);
 					break;
 				}
 				print();
@@ -401,15 +1009,15 @@ void play(){
 					clear();
 					// getmaxyx(stdscr, x, y);
 					attron(A_STANDOUT);
-     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER !!");
-				for (int i = 0; i < 3; ++i)
-				{
-					waddch(stdscr, '.');
-					refresh();
-					sleep(0.7);
-				}
+     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER ");
+					for (int i = 0; i < 3; ++i)
+					{
+						waddch(stdscr, '.');
+						refresh();
+						if(i<2)
+							usleep((float)(500000));
+					}
      				refresh();
-     				sleep(1);
 					break;
 				}
 				print();
@@ -419,21 +1027,21 @@ void play(){
 					clear();
 					// getmaxyx(stdscr, x, y);
 					attron(A_STANDOUT);
-     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER !!");
+     				mvwaddstr(stdscr, x/2, y/2, "GAME OVER ");
 					for (int i = 0; i < 3; ++i)
 					{
 						waddch(stdscr, '.');
 						refresh();
-						sleep(0.7);
+						if(i<2)
+							usleep((float)(500000));
 					}
      				refresh();
-     				sleep(1);
 					break;
 				}
 				print();
 			}
 		}
-		usleep(DELAY/VELOCITY);
+		delay(DELAY/(VELOCITY - (curr_direction=="NORTH" || curr_direction=="SOUTH")*VERTICAL_VELOCITY_FACTOR ));
 	}
 }
 
@@ -612,11 +1220,13 @@ void UpdateLeaderBoard(Player &player, bool oldUser){
 				break;
 			}
 		}
+		bool flag=false;
 		for (int i = 0; i <= userID; ++i)
 		{
 			if(stoi(data[i][1]) >= player.getHighestScore()){
 				writer.addDatainRow(data[i].begin(), data[i].end());
 			}else{
+				flag=true;
 				stringstream hscr;
 				hscr << player.getHighestScore();
 				data[userID][1] = hscr.str();
@@ -632,6 +1242,12 @@ void UpdateLeaderBoard(Player &player, bool oldUser){
 				break;
 			}
 		}
+		if(!flag){
+			for (int i = userID+1; i < data.size(); ++i)
+			{
+				writer.addDatainRow(data[i].begin(), data[i].end());
+			}
+		}
 	}
 	rename("newlb.csv", "leaderboard.csv");
 }
@@ -640,6 +1256,8 @@ int main(){
 	cout<<"Enter your name: ";
 	string name;
 	cin >> name ;
+	cout<<"Enter the difficulty level (0-6): ";
+	cin >> LEVEL;
 	Player player(name);
 	bool oldUser=true;
 	std::vector< std::vector< std::string > > data;
