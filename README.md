@@ -1,5 +1,4 @@
-# snake
-## Terminal based snake game.
+# Terminal based snake game.
 You need to have ncurses library installed to run the game. To install ncurses, type following command on terminal:\
 For Debian/Ubuntu Linux:  
 > sudo apt-get install libncurses5-dev libncursesw5-dev  
